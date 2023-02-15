@@ -1,7 +1,7 @@
 ---
 title: "用Flex和Bison自制“五仁”语言"
 date: 2016-05-04T14:00:00+08:00
-draft: true
+draft: false
 authors: ["zccrs"]
 tags: ["Bison", "Flex"]
 ---
@@ -10,6 +10,9 @@ tags: ["Bison", "Flex"]
 
 * “五仁”官方名称：zScript
 * 变量使用关键字"var"进行声明，变量本身无类型
+
+<!--more-->
+
 * 变量声明可放在源码中任何位置，可在任何位置被调用，例如，var a在源码中最后一行，也可以在第一行使用变量a
 * 每条语句的结尾必须是';'或换行符(后面准备改成强制使用';'结尾)
 * 目前支持的数据类型：int、double、bool、string、list、tuple、object 、undefined
