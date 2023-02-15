@@ -1,30 +1,50 @@
 baseURL = "https://deepin-community.github.io/"
-languageCode = "en-us"
+languageCode = "zh-cn"
+defaultContentLanguage = "zh-cn"
 title = "deepin 社区博客"
-theme = "geekblog"
+theme = "anubis"
+
+[params]
+  languageCode = "zh-cn"
+  author = "deepin"
+  email = "blog@deepin.org"
+  avatar = "/images/me.png"
+  description = ""
+  readMore = true
+  rssAsSocialIcon = true
+  style = "auto"
+
+[[params.social]]
+  id = "github"
+  name = "deepin-community"
+
+[menu]
+[[menu.main]]
+identifier = "index"
+name = "首页"
+url = "/"
+weight = 10
+
+[[menu.main]]
+identifier = "about"
+name = "关于"
+url = "/about/"
+weight = 20
+
+[[menu.main]]
+identifier = "tags"
+name = "标签"
+url = "/tags/"
+weight = 30
+
+[[menu.main]]
+name = "归档"
+identifier = "archive"
+url = "/posts/"
+weight = 40
 
 [taxonomies]
   author = "authors"
   category = "categories"
   series = "series"
   tag = "tags"
-
-[mediaTypes]
-  [mediaTypes."application/atom+xml"]
-    suffixes = ["xml"]
-
-[outputFormats]
-  [outputFormats.Atom]
-    # https://validator.w3.org/feed/docs/atom.html#whatIsAtom
-    name = "Atom"
-    mediaType = "application/atom+xml"
-    # generated file = <baseName>.<mediaType."application/atom+xml".suffixes[0]> = atom.xml
-    baseName = "atom"
-    isPlainText = false
-    rel = "alternate"
-    isHTML = false
-    noUgly = true
-    permalinkable = false
-
-[outputs]
-  home = ["HTML", "ATOM"]
