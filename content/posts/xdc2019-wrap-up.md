@@ -9,9 +9,7 @@ tags: ["xdc", "翻译"]
 
 原文：https://emersion.fr/blog/2019/xdc2019-wrap-up
 
-# XDC 2019 wrap-up
-
- &gt; 2019-10-10
+ &gt; XDC 2019 wrap-up 2019-10-10
 
 这篇文章是我从加拿大蒙特利尔飞往赫尔辛基的路上写的，我刚参加完 X.Org 的开发者研讨会。从去年西班牙那次会议以来，这是我第二次参加 XDC（译者注：X.Org Developer’s Conference）。
 
