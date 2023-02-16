@@ -28,6 +28,14 @@
                         <li><a href="{{ $tag.Permalink }}">#{{ $tag.Title | default $tag_name }}</a></li>
                     {{ end }}
                 </ul>
+
+                <ul class="post-tags">
+                    {{ range $author_name := .Params.authors }}
+                        {{ $author := ($.Site.GetPage (printf "/authors/%s" $author_name)) }}
+                        <li><a href="{{ $author.Permalink }}">@{{ $author_name }}</a></li>
+                    {{ end }}
+                </ul>
+
         {{ end }}
     </div>
 </div>
