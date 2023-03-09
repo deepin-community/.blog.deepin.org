@@ -3,7 +3,6 @@ languageCode = "zh-cn"
 defaultContentLanguage = "zh-cn"
 title = "deepin 社区博客"
 theme = "anubis"
-ignoreFiles = ['README.md']
 
 [params]
   languageCode = "zh-cn"
