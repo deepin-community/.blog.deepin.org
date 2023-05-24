@@ -1,1 +1,69 @@
-<link rel="stylesheet" href="{{ .Site.BaseURL }}deepin.css" />
+<style>
+  .post-summary {
+    font-size: 15px;
+  }
+  code {
+    background-color: rgba(100, 100, 100, 0.5);
+    padding: 2px 5px;
+  }
+  d-header .d-menu-li:hover > a {
+    border-bottom: unset;
+  }
+</style>
+
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="https://cdn-nu-common.uniontech.com/deepin-component/web-component/v1/main.css"
+/>
+<script src="https://cdn-nu-common.uniontech.com/deepin-component/web-component/v1/main.js"></script>
+
+
+
+<d-header menu="[]">
+    {{ $currentPage := . }}
+    {{ range .Site.Menus.main }}
+        <li class="d-menu-li" slot="menu">
+            <a class="vaild-link {{if or ($currentPage.IsMenuCurrent "main" .) ($currentPage.HasMenuCurrent "main" .) }} active{{end}}" href="{{ .URL | absLangURL }}" title="{{ .Title }}">{{ .Name }}</a>
+        </li>
+    {{ end }}
+    <li class="d-menu-li" slot="menu">
+        <a class="vaild-link" href="https://github.com/deepin-community/.blog.deepin.org#readme">欢迎投稿</a>
+    </li>
+
+<!-- Copy from social.html -->
+{{ range $.Site.Params.Social }}
+    {{ if and (isset $.Site.Data.social.social_icons .id) (isset . "url") }}
+        <li class="d-menu-li" slot="menu">
+            <a {{ printf "href=%q" .url | safeHTMLAttr }} title="{{ humanize .id }}" rel="me">
+            {{ partial "font-awesome.html" (dict "iconName" .id "custom" false) }}
+            </a>
+        </li>
+    {{ else if and (isset $.Site.Data.social.social_icons .id) (isset . "name") }}
+        {{ $url := index $.Site.Data.social.social_icons .id }}
+        {{ $ref := printf $url .name }}
+        <li class="d-menu-li" slot="menu">
+            <a {{ printf "href=%q" $ref | safeHTMLAttr }} title="{{ humanize .id }}" rel="me">
+            {{ partial "font-awesome.html" (dict "iconName" .id "custom" false) }}
+            </a>
+        </li>
+    {{ else if (isset . "url") }}
+        <li class="d-menu-li" slot="menu">
+            <a href="{{ printf .url }}" title="{{ humanize .id }}" rel="me">
+                {{ partial "font-awesome.html" (dict "iconName" .id "custom" true) }}
+            </a>
+        </li>
+    {{ end }}
+{{ end }}
+
+{{ if .Site.Params.rssAsSocialIcon }}
+    {{ with .Site.Home.OutputFormats.Get "rss" -}}
+        <li class="d-menu-li" slot="menu">
+            <a {{ printf "href=%q" .Permalink | safeHTMLAttr }} title="RSS" rel="me">
+            {{ partial "font-awesome.html" (dict "iconName" "rss" "custom" false) }}
+            </a>
+        </li>
+    {{ end -}}
+{{ end }}
+<!-- Copy End -->
+</d-header>
