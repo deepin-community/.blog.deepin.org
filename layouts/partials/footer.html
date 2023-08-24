@@ -24,3 +24,25 @@
 
     {{ partial "h-card.html" . }}
 </footer>
+
+<link rel="stylesheet" href="/katex0.16.8/katex.min.css">
+
+<!-- The loading of KaTeX is deferred to speed up page rendering -->
+<script defer src="/katex0.16.8/katex.min.js"></script>
+
+<!-- To automatically render math in text elements, include the auto-render extension: -->
+<script defer src="/katex0.16.8/auto-render.min.js"></script>
+
+<script>
+     document.addEventListener("DOMContentLoaded", function() {
+        renderMathInElement(document.body, {
+          delimiters: [
+              {left: '$$', right: '$$', display: true},
+              {left: '$', right: '$', display: false},
+              {left: '\\(', right: '\\)', display: false},
+              {left: '\\[', right: '\\]', display: true}
+          ],
+          throwOnError : false
+        });
+    });
+</script>
