@@ -48,3 +48,6 @@ weight = 40
   category = "categories"
   series = "series"
   tag = "tags"
+
+[markup.goldmark.renderer]
+unsafe = true
