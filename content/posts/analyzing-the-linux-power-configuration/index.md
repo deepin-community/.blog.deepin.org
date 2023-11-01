@@ -11,7 +11,7 @@ tags: ["Tools"]
 
  在对电源进行专项优化之前，我们首先对 deepin 系统进行了深入的调查和分析，以了解其在负载场景下的实际运行情况。经过对 CPU 使用率和功耗的监测，我们发现了一个令人惊讶的事实：尽管在高负载场景下 CPU 的占用率不高，但其功耗却持续升高，最终导致设备发热并影响续航。也就是说，我们前期做的省电优化工作，不仅无效，还起了反作用（具体情况作者将在下文作出仔细说明）。
 
-<!---more--->
+<!--more-->
 
 ## 二、问题
 
@@ -146,15 +146,15 @@ power_dpm_force_performance_level:
 
 * LOW 模式的跑分
 
-![LOW 模式的跑分](analyzing-the-linux-power-configuration/low.jpg)
+![LOW 模式的跑分](./low.jpg)
 
 * auto 模式的跑分
 
-![auto 模式的跑分](analyzing-the-linux-power-configuration/auto.jpg)
+![auto 模式的跑分](./auto.jpg)
 
 * high 模式的跑分
 
-![high 模式的跑分](analyzing-the-linux-power-configuration/high.jpg)
+![high 模式的跑分](./high.jpg)
 
 ####  Intel GPU
 
@@ -171,7 +171,7 @@ sudo intel_gpu_frequency
 可以看到 intel 的显卡驱动是在 600 MHz 到 2400 MHz 之间动态调整（如上图）
 
 测试笔记本下 intel 核显跑分如下
-![图片](analyzing-the-linux-power-configuration/gxn.png)
+![图片](./gxn.png)
 
 #### Nvidia
 
@@ -195,7 +195,7 @@ sudo intel_gpu_frequency
 ### 1. S-tui
 
  可以看到 CPU 频率变化，配合 stress 可以对 cpu 进行压力测试。
-![图片](analyzing-the-linux-power-configuration/s-tui.jpg)
+![图片](./s-tui.jpg)
 
 ### 2. intel-gpu-tools
 
