@@ -14,7 +14,7 @@ Wayland 是一个通信协议，规定了显示服务器与客户端之间的通
 ### Wayland 与 X Window System 有什么不同？
 
 Wayland 与 X Window System 的最大不同在于，Wayland 与 X Window System 的最大不同在于，它的窗口管理器和 Wayland Server 在同一个进程，并且客户端能够通过 EGL 以及一些 Wayland 特定的 EGL 扩充组件直接在显示内存中绘制自己的缓冲区。 窗口管理器简化成显示管理服务，专门负责绘制那些屏幕上的程序。 这比 X Window System 中的窗口管理器要更简单、高效。
-
+<!--more-->
 ### Wayland 协议有哪些组成？
 
 #### 1.协议概述
