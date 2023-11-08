@@ -1,6 +1,6 @@
 ---
 title: deepin 5g wwan 支持
-date: 2023-11-8 13:00:00
+date: 2023-11-8
 draft: false
 authors: ["longlong","nn3300"]
 tags: ["Tools"]
