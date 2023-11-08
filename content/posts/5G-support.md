@@ -6,6 +6,9 @@ authors: ["longlong","nn3300"]
 tags: ["Tools"]
 ---
 
+本文简述了deepin v23系统使用5G WWAN网卡连接互联网的方式，仅仅作为一个临时解决方案和技术验证使用，后期会在系统中内置此功能。
+<!--more-->
+
 ## 第一步：安装modemmanager
 
 modemmanager是一个由freedesktop托管的项目，旨在在linux设备上运行调制解调器以让linux设备获得蜂窝无线网络连接的能力，所以我们第一步骤就是安装此软件。目前deepin已经支持此软件最新版本：
