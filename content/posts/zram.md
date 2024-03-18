@@ -16,21 +16,24 @@ tags: ["内存压缩","zswap","zram","zcache","zsmalloc","z3fold","zbud"]
 ![image](https://github.com/zhangke1990616/.blog.deepin.org/assets/3860068/c6907def-2d6d-4d90-bb98-3acfd3f9ed43)
 
 图：内存管理大体框架（内存压缩技术处于内存回收memory reclaim部分中）
+
 # 主流内存压缩技术
 目前linux内核主流的内存压缩技术主要有3种：zSwap, zRAM, zCache。下面我们依次对几种方式进行一个简要的说明
+
 ## zSwap
 zSwap是在memory与flash之间的一层“cache”,当内存需要swap出去磁盘的时候，先通过压缩放到zSwap中去，zSwap空间按需增长。达到一定程度后则会按照LRU的顺序(前提是使用的内存分配方法需要支持LRU)将就最旧的page解压写入磁盘swap device，之后将当前的page压缩写入zSwap。
 
 zswap本身存在一些缺陷或问题:
-1) 如果开启当zswap满交换出backing store的功能, 由于需要将zswap里的内存按LRU顺序解压再swap out, 这就要求内存分配器支持LRU功能。
-2) 如果不开启当zswap满交换出backing store的功能, 和zRam是类似的。
+1. 如果开启当zswap满交换出backing store的功能, 由于需要将zswap里的内存按LRU顺序解压再swap out, 这就要求内存分配器支持LRU功能。
+2. 如果不开启当zswap满交换出backing store的功能, 和zRam是类似的。
+
 ## zRram
 zRram即压缩的内存， 使用内存模拟block device的做法。实际不会写到块设备中去，只会压缩后写到模拟的块设备中，其实也就是还是在RAM中，只是通过压缩了。由于压缩和解压缩的速度远比读写IO好，因此在移动终端设备广泛被应用。zRam是基于RAM的block device, 一般swap priority会比较高。只有当其满，系统才会考虑其他的swap devices。当然这个优先级用户可以配置。
 
 zRram本身存在一些缺陷或问题:
-1) zRam大小是可灵活配置的, 那是不是配置越大越好呢? 如果不是,配置多大是最合适的呢?
-2) 使用zRam可能会在低内存场景由于频繁的内存压缩导致kswapd进程占CPU高, 怎样改善?
-3) 增大了zRam配置,对系统内存碎片是否有影响?
+1. zRam大小是可灵活配置的, 那是不是配置越大越好呢? 如果不是,配置多大是最合适的呢?
+2. 使用zRam可能会在低内存场景由于频繁的内存压缩导致kswapd进程占CPU高, 怎样改善?
+3. 增大了zRam配置,对系统内存碎片是否有影响?
 
 要利用好zRam功能, 并不是简单地配置了就OK了, 还需要对各种场景和问题都做好处理, 才能发挥最优的效果。
 
@@ -38,9 +41,9 @@ zRram本身存在一些缺陷或问题:
 zCache是oracle提出的一种实现文件页压缩技术，也是memory与block dev之间的一层“cache”,与zswap比较接近，但zcache目前压缩的是文件页，而zSwap和zRAM压缩是匿名页。
 
 zcache本身存在一些缺陷或问题:
-1) 有些文件页可能本身是压缩的内容, 这时可能无法再进行压缩了；
-2) zCache目前无法使用zsmalloc, 如果使用zbud,压缩率较低；
-3) 使用的zbud/z3fold分配的内存是不可移动的, 需要关注内存碎片问题；
+1. 有些文件页可能本身是压缩的内容, 这时可能无法再进行压缩了；
+2. zCache目前无法使用zsmalloc, 如果使用zbud,压缩率较低；
+3. 使用的zbud/z3fold分配的内存是不可移动的, 需要关注内存碎片问题；
 
 # 内存压缩主流的内存分配器
 ## Zsmalloc
@@ -51,8 +54,10 @@ zsmalloc是为ZRAM设计的一种内存分配器。内核已经有slub了，为�
 ![image](https://wiki.deepin.org/2024-3-14_56580.png)
 
 需要注意的是, 当前zsmalloc不支持LRU功能, 旧版本内核分配的不可移动的页, 对内存碎片影响严重, 但最新版本内核已经是支持分配可移动类型内存了。
+
 ## Zbud
 zbud是一个专门为存储压缩page而设计的内存分配器。用于将2个objects存到1个单独的page中。zbud是可以支持LRU的, 但分配的内存是不可移动的。
+
 ## Z3fold
 z3fold是一个较新的内存分配器, 与zbud不同的是, 将3个objects存到1个单独的page中,也就是zbud内存利用率极限是1:2, z3fold极限是1:3。同样z3fold是可以支持LRU的, 但分配的内存是不可移动的。
 
@@ -82,12 +87,12 @@ zRam内存压缩技术是目前移动终端广泛使用的内存压缩技术。
 Zram内存压缩技术本质上就是以时间换空间。通过CPU压缩、解压缩的开销换取更大的可用内存空间。
 
 我们主要描述清楚下面这2个问题：
-1） 什么时候会进行内存压缩？
-2） 进行内存压缩/解压缩的流程是怎样的？
+1.什么时候会进行内存压缩？
+2.进行内存压缩/解压缩的流程是怎样的？
 
 进行内存压缩的时机：
-1） Kswapd场景：kswapd是内核内存回收线程， 当内存watermark低于low水线时会被唤醒工作， 其到内存watermark不小于high水线。
-2） Direct reclaim场景：内存分配过程进入slowpath, 进行直接行内存回收。
+1. Kswapd场景：kswapd是内核内存回收线程， 当内存watermark低于low水线时会被唤醒工作， 其到内存watermark不小于high水线。
+2. Direct reclaim场景：内存分配过程进入slowpath, 进行直接行内存回收。
 ![image](https://github.com/zhangke1990616/.blog.deepin.org/assets/3860068/289527b7-9055-4091-99c1-9363486d738e)
 
 下面是基于4.4内核理出的内存压缩、解压缩流程。
@@ -101,6 +106,7 @@ Zram内存压缩技术本质上就是以时间换空间。通过CPU压缩、解�
 
 ## 内存压缩算法
 目前比较主流的内存算法主要为LZ0, LZ4, ZSTD等。下面截取了几种算法在x86机器上的表现。各算法有各自特点， 有以压缩率高的， 有压缩/解压快的等， 具体要结合需求场景选择使用。
+
 ![image](https://github.com/zhangke1990616/.blog.deepin.org/assets/3860068/1dfeb35c-f283-4a91-8c67-730737ab9120)
 
 # zRAM技术应用
@@ -110,25 +116,33 @@ Zram内存压缩技术本质上就是以时间换空间。通过CPU压缩、解�
 
 ###  配置内存压缩算法
 下面例子配置压缩算法为lz4
+
+```
 echo lz4 > /sys/block/zram0/comp_algorithm
+```
 
 ### 配置ZRAM大小
+
 下面例子配置zram大小为2GB
+
+```
 echo 2147483648 > /sys/block/zram0/disksize
+```
 
 ### 使能zram
 mkswap /dev/zram0
+
 swapon /dev/zram0
 
 ### zRAM块设备个数设定
 如果是编译为内核模块，那么可以在内核模块加载的时候，添加参数：insmod zram.ko num_devices=4
 
-也可直接修改内核源代码：
-代码地址为：/drivers/block/zram/zram_drv.c
-
+也可直接修改内核源代码，代码地址为：
+/drivers/block/zram/zram_drv.c
+```
 /* Module params (documentation at end) */
 static unsigned int num_devices = 1;
-
+```
 修改num_devices为你想要的zram个数即可
 
 ### 压缩流的最大个数设定
@@ -136,11 +150,16 @@ static unsigned int num_devices = 1;
 
 查看压缩流个数：默认是1，可以直接向proc文件写入，也可以直接更改代码方式来改变默认压缩流个数
 
+```
 cat /sys/block/zram0/max_comp_streams
+```
 
 设定压缩流个数：
 
+```
 echo 3 > /sys/block/zram0/max_comp_streams
+```
+
 ### 其他参数
 | **Name** | **Access** | **Description** |
 | --- | --- | --- |
@@ -170,32 +189,32 @@ swappiness参数是内核倾向于回收匿名页到swap（使用的ZRAM就是sw
 ## zRam相关的技术指标
 
 ### zRAM大小及剩余空间
-Proc/meminfo中可以查看相关信息
-SwapTotal：swap总大小, 如果配置为ZRAM, 这里就是ZRAM总大小
-SwapFree：swap剩余大小, 如果配置为ZRAM, 这里就是ZRAM剩余大小
+Proc/meminfo 中可以查看相关信息
+SwapTotal：swap 总大小, 如果配置为ZRAM, 这里就是ZRAM总大小
+SwapFree：swap 剩余大小, 如果配置为ZRAM, 这里就是ZRAM剩余大小
 
-当然， 节点 /sys/block/zram0/disksize是最直接的。
+当然， 节点 /sys/block/zram0/disksize 是最直接的。
 
 ### zRAM压缩率
-/sys/block/zram/mm_stat中有压缩前后的大小数据， 由此可以计算出实际的压缩率
+/sys/block/zram/mm_stat 中有压缩前后的大小数据， 由此可以计算出实际的压缩率
 orig_data_size：压缩前数据大小， 单位为bytes
 compr_data_size ：压缩后数据大小， 单位为bytes
 
 ### 换出/换入swap区的总量
-proc/vmstat中中有相关信息
+proc/vmstat 中中有相关信息
 pswpin:换入总量， 单位为page
 pswout:换出总量， 单位为page
 
 ## zRam相关优化
 上面提到zRam的一些缺陷, 怎么去改善呢?
 
-1) zRam大小是可灵活配置的, 那是不是配置越大越好呢? 如果不是配置多大是最合适的呢?
+1. zRam大小是可灵活配置的, 那是不是配置越大越好呢? 如果不是配置多大是最合适的呢?
 zRam大小的配置比较灵活, 如果zRam配置过大, 后台缓存了应用过多, 这也是有可能会影响前台应用使用的流畅度。另外, zRam配置越大, 也需要关注系统的内存碎片化情。因此zRam并不是配置越大越好,具体的大小需要根据内存总大小及系统负载情况考虑及实测而定。
 
-2) 使用zRam,可能会存在低内存场景由于频繁的内存压缩导致kswapd进程占CPU高, 怎样改善?
+2. 使用zRam,可能会存在低内存场景由于频繁的内存压缩导致kswapd进程占CPU高, 怎样改善?
 zRam本质就是以时间换空间, 在低内存的情况下, 肯定会比较频繁地回收内存, 这时kswapd进程是比较活跃的, 再加上通过压缩内存, 会更加消耗CPU资源。改善这种情况方法也比较多, 比如, 可以使用更优的压缩算法, 区别使用场景, 后台不影响用户使用的场景异步进行深度内存压缩, 与用户体验相关的场景同步适当减少内存压缩, 通过增加文件页的回收比例加快内存回收等等。
 
-3) 增大了zRam配置,对系统内存碎片是否有影响?
+3. 增大了zRam配置,对系统内存碎片是否有影响?
 使用zRam是有可能导致系统内存碎片变得更严重的, 特别是zsmalloc分配不支持可移动内存类型的时候。新版的内核zsmalloc已经支持可移动类型分配的， 但由于增大了zRam,结合android手机的使用特点, 仍然会有可能导致系统内存碎片较严重的情况,因些内存碎片问题也是需要重点关注的。解决系统内存碎片的方法也比较多, 可以结合具体的原因及场景进行优化。
 
 # 参考资料
